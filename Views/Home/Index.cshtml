@@ -1,0 +1,77 @@
+﻿@*@model IEnumerable<AFS.Data.tblLeetSpeek>*@
+@{
+    ViewBag.Title = "Home Page";
+}
+
+<link href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css" rel="stylesheet" type="text/css" />
+
+<h2>ViewAllRecords</h2>
+
+
+<form>
+    <div class="form-row">
+        <label>Enter an input text:</label>
+        <input id="txtLeetText" type="text" class="form-control mb-3" placeholder="Enter a text to convert to l33tsp34k" />
+        <button type="button" class="btn btn-primary" id="btnConvert">Convert</button>
+    </div>
+    <div class="form-row">
+        <div class="table-responsive mb-4">
+            <table id="grdDemo" class="table table-hover" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Input Text</th>
+                        <th>Translation</th>
+                        <th>Translated Text</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</form>
+
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+
+<script type="text/javascript">
+    //To load the Grid with data from the database
+    $("#grdDemo").DataTable({
+        "processing": true,
+        "ajax": {
+            "url": "/Home/AjaxMethod",
+            "dataSrc": ""
+        },
+        "columns": [
+            //{ "data": "Id", "autoWidth": true },
+            { "data": "InputText", "autoWidth": true },
+            { "data": "TranslationType", "autoWidth": true },
+            { "data": "TranslatedText", "autoWidth": true }
+        ]
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        //If the button is clicked
+        $('#btnConvert').click(function () {
+            //Check if the text field is not empty
+            if ($('#txtLeetText').val().length === 0) {
+                $.notify("Please fill the text field", "error");
+                $('#txtLeetText').focus()
+            }
+            else {
+                var objT = {
+                    inputText: $.trim($('#txtLeetText').val())
+                };
+
+                $.post("/Home/CreateLeet", objT, function (data) {
+                    $.notify("Text has been successfully added", "success");
+
+                    location.reload(true); 
+
+                    $('#txtLeetText').val('');
+                });
+            }
+        })
+    })    
+</script>
